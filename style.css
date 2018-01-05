@@ -1,0 +1,32 @@
+.wrapper {
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+     /* grid-gap: 1em; */
+    background: black;
+}
+
+.wrapper > div {
+    background: white;
+}
+
+.wrapper > div:nth-child(8n + 1), div:nth-child(8n + 3), div:nth-child(8n + 6), div:nth-child(8n + 8) {
+    background: lightgray;
+}
+
+ /*
+.wrapper > div:nth-child(even){
+    background: lightgray;
+}
+.wrapper > div:nth-child(odd){
+    background: white;
+} */
+
+.box {
+    text-align: center;
+    border: 1px groove black;
+}
+
+ /*
+.innards {
+    font-size: ;
+} */
