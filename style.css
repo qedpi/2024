@@ -1,7 +1,14 @@
+#game_box {
+    width: 100vw;
+    height: 100vh;
+    background-color: blue;
+}
+
 .wrapper {
     display: grid;
     grid-template-columns: 25% 25% 25% 25%;
-     /* grid-gap: 1em; */
+    grid-auto-rows: minmax(100px, auto);
+    /* grid-gap: 1em; */
     background: black;
 }
 

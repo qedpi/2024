@@ -15,15 +15,19 @@
 </head>
 <body>
 <div id="app">
+    <audio id="push_effect" src="https://www.soundjay.com/nature/sounds/flame-1.mp3" preload="auto"></audio>
+
     <h1>{{message}}</h1>
-    <div class="wrapper container">
-        <template v-for="row in boxes">
-            <template v-for="cell in row">
-                <div class="box">
-                    <p class="innards display-1">{{cell}}</p>
-                </div>
+    <div id="game_box container">
+        <div class="wrapper container">
+            <template v-for="row in boxes">
+                <template v-for="cell in row">
+                    <div class="box">
+                        <p class="innards display-1">{{cell}}</p>
+                    </div>
+                </template>
             </template>
-        </template>
+        </div>
     </div>
 </div>
 
@@ -35,51 +39,7 @@
 
 <!-- Vue.js -->
 <script src ="https://cdn.jsdelivr.net/npm/vue"></script>
-<!--<script src="app.js"></script>-->
+<script src="app.js"></script>
 
 </body>
 </html>
-
-<script>
-    new Vue({
-        el: "#app",
-        data: {
-            message: 'hello',
-            boxes: [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]],
-            box_rows: 4,
-            box_cols: 4,
-            push_dirs: {37: [0, 1], 38: [-1, 0], 39: [0, -1], 40: [1, 0]},
-        },
-        methods: {
-            box_push(dir){
-                const [dx, dy] = dir
-                alert(dx + ' yay  ' + dy)
-                 /*
-                for (let row of this.boxes){
-                    for (let cell of row){
-                        if
-                    }
-                } */
-                this.boxes.forEach((row, i) => {
-                    row.forEach((box, j) => {
-                        let [xf, yf] = [i + dx, j + dy]
-                        if (0 <= xf && xf < this.box_cols && 0 <= yf && yf < this.box_rows){
-                            // within bounds
-                            this.boxes[i][j] += this.boxes[yf][xf]
-                        } else {
-                            this.boxes[i][j] = 0
-                        }
-                    })
-                })
-                this.boxes.push([])
-                console.log("box changed")
-            }
-        },
-        mounted(){
-            window.addEventListener('keyup', e => {
-                // check for arrow keys
-                this.box_push(this.push_dirs[e.keyCode]);
-            })
-        },
-    })
-</script>
