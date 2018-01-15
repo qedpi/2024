@@ -50,7 +50,13 @@ new Vue({
             return empties
         },
         game_over(){
+            this.play_sound("game_over")
             alert('game over');
+            this.gen_box_vals()
+        },
+        win_game(){
+            this.play_sound("applause")
+            alert("congrats, you've made 24!")
             this.gen_box_vals()
         },
         genk(k){
@@ -137,6 +143,9 @@ new Vue({
                         if (this.combinable(cur, target)){
                             if (!this.ops.includes(res[0]) && res.length >= 3){ // can simplify expression
                                 res = [String(eval(res.slice(0, 3).join('')))].concat(res.slice(3))
+                            }
+                            if (res[0] === '24'){
+                                this.win_game()
                             }
                             this.boxes[r][c] = res;
                             this.boxes[yf][xf] = null;
