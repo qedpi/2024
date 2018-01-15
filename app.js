@@ -154,6 +154,7 @@ new Vue({
                             }
                             if (res[0] === '24'){
                                 this.win_game()
+                                return
                             }
                             this.boxes[r][c] = res;
                             this.boxes[yf][xf] = null;
