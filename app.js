@@ -86,7 +86,7 @@ new Vue({
         gen_something(){
             let val = null
             const select = Math.random()
-            if (select < .4){
+            if (select < .5){
                 val = this.randop()
             } else {
                 val = rand_range(...this.rint_range)
