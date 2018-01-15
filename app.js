@@ -1,3 +1,19 @@
+function rand_range(a, b){
+    return Math.floor(Math.random() * (b - a + 1)) + a
+}
+function range(a, b){
+    let reversed = false;
+    if (a > b){
+        reversed = true;
+        [a, b] = [b, a]
+    }
+    let ran = Array(b - a + 1).fill().map((x, i) => i + a);
+    return reversed? ran.reverse() : ran;
+}
+function repeat(val, times){
+    return Array(times).fill(val);
+}
+
 new Vue({
     el: "#app",
     data: {
@@ -5,19 +21,16 @@ new Vue({
         boxes: [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]],
         box_rows: 4,
         box_cols: 4,
+
+        // left, up, right, down
         push_dirs: {37: [0, 1], 38: [1, 0], 39: [0, -1], 40: [-1, 0]},
+        traverse_dirs: null,
         rint_range: [0, 2],
         ops: "+-*/"
     },
     methods: {
-        rand_range(a, b){
-            return Math.floor(Math.random() * (b - a + 1)) + a
-        },
-        randint(){
-            return this.rand_range(...this.rint_range)
-        },
         randop(){
-            return this.ops[this.rand_range(0, 3)]
+            return this.ops[rand_range(0, 3)]
         },
         get_empty_cells(){
             let empties = []
@@ -37,7 +50,7 @@ new Vue({
                 if (empties.length < 1){
                     break
                 }
-                let [r, c] = empties[this.rand_range(0, empties.length - 1)]
+                let [r, c] = empties[rand_range(0, empties.length - 1)]
                 console.log(r, c)
                 this.boxes[r][c] = this.gen_something()
             }
@@ -56,11 +69,12 @@ new Vue({
             if (select < .4){
                 val = this.randop()
             } else {
-                val = this.randint()
+                val = rand_range(...this.rint_range)
             }
             return val
         },
         gen_box_vals(){
+            this.traverse_create();
             this.boxes.forEach((row, i) => {
                 this.boxes.forEach((cell, j) => {
                     this.boxes[i][j] = this.gen_maybe()
@@ -72,58 +86,55 @@ new Vue({
             // console.log(...this.get_empty_cells())
         },
         combinable(x, y) {
+            // if two boxes can be ocmbined into one
             const xlast = x[x.length - 1]
             const yfirst = y[0]
-            return this.ops.includes(xlast) !== this.ops.includes(yfirst)
-        }
-        ,
-        box_push(dir){
+            if (this.ops.includes(xlast) !== this.ops.includes(yfirst)){
+                if (!(this.ops.includes(xlast) && x.length + y.length > 2)){
+                    return true;
+                }
+            }
+            return false;
+        },
+        traverse_create(){
+            this.traverse_dirs = {37: [range(0, this.box_rows - 1), range(0, this.box_cols - 2)],
+                38: [range(0, this.box_rows - 2), range(0, this.box_cols - 1)],
+                39: [range(0, this.box_rows - 1), range(this.box_cols - 1, 1)],
+                40: [range(this.box_rows - 1, 1), range(0, this.box_cols - 1)]}
+        },
+        box_push(dir, row_range, col_range){
             this.play_sound("push_effect")
             const [dx, dy] = dir
-            /*
-            for (let r = 0; r < this.box_rows; r ++){
-                for (let c = 0; c < this.box_cols; c ++){
-                    let [yf, xf] = [r + dx, c + dy]
-                    let in_bounds = 0 <= xf && xf < this.box_cols && 0 <= yf && yf < this.box_rows
-                    if (in_bounds){
-                        // this.boxes[r][c] = -1
-                        let [from, target] = [this.boxes[yf][xf], this.boxes[r][c]]
-                        this.boxes[r][c] += this.combinable(target, from)
+            for (let r of row_range){
+                for (let c of col_range){
+                    // if cur empty, shift over incoming, otherwise, combine if possible
+                    const [yf, xf] = [r + dx, c + dy];
+                    const [cur, target] = [this.boxes[r][c], this.boxes[yf][xf]];
+                    // cur empty, next not empty
+                    console.log(r, c, cur, target)
+                    if (cur === null && target !== null){
+                        this.boxes[r][c] = target;
+                        this.boxes[yf][xf] = null;
+                    } else if (cur !== null && target !== null){
+                        if (this.combinable(cur, target)){
+                            let res = this.boxes[r][c] + target
+                            if (!this.ops.includes(res[0]) && res.length >= 3){ // can simplify expression
+                                res = eval(res.slice(0, 3)) + res.slice(3)
+                            }
+                            this.boxes[r][c] = res;
+                            this.boxes[yf][xf] = null;
+                        }
                     }
                 }
-            } */
+            }
+
             this.genk(1)
+
             this.boxes.push([])
             this.boxes.pop()
-            /*
-            let box_after = [] // this.boxes[r][c]
 
-            this.boxes.forEach((row, i) => {
-                // console.log(row)
-                let row_after = []
-                row.forEach((box, j) => {
-                    let [yf, xf] = [i + dx, j + dy]
-                    let [yr, xr] = [i - dx, j - dy]
-                    // console.log(yr, xr, i, j)
-                    // If within bounds, shift
-                    let carry = ""
-                    let in_bounds = 0 <= xf && xf < this.box_cols && 0 <= yf && yf < this.box_rows
-                    if (in_bounds && this.boxes[yf][xf] !== null){
-                            carry += this.boxes[yf][xf]
-                    } else {
-                        // has no value
-                        carry = null
-                    }
-                    if (!(0 <= xr && xr < this.box_cols && 0 <= yr && yr < this.box_rows) && this.boxes[i][j] !== null){  // end element, gets added to
-                        carry += this.boxes[i][j]
-                    }
-                    row_after.push(carry)
-                })
-                box_after.push(row_after)
-            })
 
-            this.boxes = box_after
-             */
+
         },
         play_sound(sound_id){
             // makes sure that sound effect plays from start even when it's still playing
@@ -138,7 +149,7 @@ new Vue({
         window.addEventListener('keyup', e => {
             // check for arrow keys
             if (Object.keys(this.push_dirs).includes(String(e.keyCode))){
-                this.box_push(this.push_dirs[e.keyCode])
+                this.box_push(this.push_dirs[e.keyCode], ...this.traverse_dirs[e.keyCode])
             }
         })
     },
