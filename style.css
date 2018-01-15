@@ -33,6 +33,14 @@
     border: 1px groove black;
 }
 
+.op {
+    color: palevioletred;
+}
+
+.num {
+    color: cornflowerblue;
+}
+
  /*
 .innards {
     font-size: ;

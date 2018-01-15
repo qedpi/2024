@@ -32,6 +32,12 @@ new Vue({
         randop(){
             return this.ops[rand_range(0, 3)]
         },
+        is_op(cell){
+            if (cell === null)
+                return false
+            else
+                return this.ops.includes(cell.slice(-1))
+        },
         get_empty_cells(){
             let empties = []
             for (let r = 0; r < this.box_rows; r ++){
@@ -52,14 +58,14 @@ new Vue({
                 }
                 let [r, c] = empties[rand_range(0, empties.length - 1)]
                 console.log(r, c)
-                this.boxes[r][c] = this.gen_something()
+                this.boxes[r][c] = [this.gen_something()]
             }
         },
         gen_maybe(){
             let val = null
             const hasvalue = Math.random()
             if (hasvalue < .2){
-                val = this.gen_something()
+                val = [this.gen_something()]
             }
             return val
         },
@@ -71,7 +77,7 @@ new Vue({
             } else {
                 val = rand_range(...this.rint_range)
             }
-            return val
+            return String(val)
         },
         gen_box_vals(){
             this.traverse_create();
@@ -119,10 +125,10 @@ new Vue({
                         if (dx === -1 || dy === -1){
                             [cur, target] = [target, cur]
                         }
-                        let res = cur + target
+                        let res = cur.concat(target)
                         if (this.combinable(cur, target)){
                             if (!this.ops.includes(res[0]) && res.length >= 3){ // can simplify expression
-                                res = eval(res.slice(0, 3)) + res.slice(3)
+                                res = [String(eval(res.slice(0, 3).join('')))].concat(res.slice(3))
                             }
                             this.boxes[r][c] = res;
                             this.boxes[yf][xf] = null;
@@ -146,6 +152,13 @@ new Vue({
             aud.currentTime = 0;
             aud.play();
         },
+    },
+
+    filters: {
+        combine(ar){
+            console.log('ar is', ar)
+            return ar === null? null : ar.join('')
+        }
     },
     mounted(){
         this.gen_box_vals()

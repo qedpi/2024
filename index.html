@@ -23,7 +23,9 @@
             <template v-for="row in boxes">
                 <template v-for="cell in row">
                     <div class="box">
-                        <p class="innards display-1">{{cell}}</p>
+                        <div :class="{op: is_op(cell), num: !is_op(cell)}">
+                            <p class="innards display-1">{{ cell | combine }}</p>
+                        </div>
                     </div>
                 </template>
             </template>
