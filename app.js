@@ -182,7 +182,7 @@ new Vue({
     filters: {
         combine(ar){
             console.log('ar is', ar)
-            return ar === null? null : ar.join('')
+            return ar === null? null : ar.join(' ')
         }
     },
     mounted(){
