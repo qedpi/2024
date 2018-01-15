@@ -32,11 +32,19 @@ new Vue({
         randop(){
             return this.ops[rand_range(0, 3)]
         },
-        is_op(cell){
-            if (cell === null)
-                return false
-            else
-                return this.ops.includes(cell.slice(-1))
+        is_type(cell){
+            if (cell === null){
+                return 0
+            } else if (cell.length === 1){
+                if (this.ops.includes(cell[0])){
+                    return 1
+                } else {
+                    return 2
+                }
+            } else {
+                 //                 return this.ops.includes(cell.slice(-1))
+                return 3
+            }
         },
         get_empty_cells(){
             let empties = []

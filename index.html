@@ -25,7 +25,7 @@
             <template v-for="row in boxes">
                 <template v-for="cell in row">
                     <div class="box">
-                        <div :class="{op: is_op(cell), num: !is_op(cell)}">
+                        <div :class="{op: is_type(cell) === 1, num: is_type(cell) === 2, combo: is_type(cell) === 3}">
                             <p class="innards display-1">{{ cell | combine }}</p>
                         </div>
                     </div>
