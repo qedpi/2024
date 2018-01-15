@@ -25,7 +25,7 @@ new Vue({
         // left, up, right, down
         push_dirs: {37: [0, 1], 38: [1, 0], 39: [0, -1], 40: [-1, 0]},
         traverse_dirs: null,
-        rint_range: [0, 2],
+        rint_range: [1, 10],
         ops: "+-*/"
     },
     methods: {
@@ -90,7 +90,7 @@ new Vue({
             const xlast = x[x.length - 1]
             const yfirst = y[0]
             if (this.ops.includes(xlast) !== this.ops.includes(yfirst)){
-                if (!(this.ops.includes(xlast) && x.length + y.length > 2)){
+                if (!(this.ops.includes(x[0]) && x.length + y.length > 2)){
                     return true;
                 }
             }
@@ -104,20 +104,23 @@ new Vue({
         },
         box_push(dir, row_range, col_range){
             this.play_sound("push_effect")
-            const [dx, dy] = dir
+            const [dy, dx] = dir
             for (let r of row_range){
                 for (let c of col_range){
                     // if cur empty, shift over incoming, otherwise, combine if possible
-                    const [yf, xf] = [r + dx, c + dy];
-                    const [cur, target] = [this.boxes[r][c], this.boxes[yf][xf]];
+                    const [yf, xf] = [r + dy, c + dx];
+                    let [cur, target] = [this.boxes[r][c], this.boxes[yf][xf]];
                     // cur empty, next not empty
-                    console.log(r, c, cur, target)
+                    // console.log(r, c, cur, target)
                     if (cur === null && target !== null){
                         this.boxes[r][c] = target;
                         this.boxes[yf][xf] = null;
                     } else if (cur !== null && target !== null){
+                        if (dx === -1 || dy === -1){
+                            [cur, target] = [target, cur]
+                        }
+                        let res = cur + target
                         if (this.combinable(cur, target)){
-                            let res = this.boxes[r][c] + target
                             if (!this.ops.includes(res[0]) && res.length >= 3){ // can simplify expression
                                 res = eval(res.slice(0, 3)) + res.slice(3)
                             }
