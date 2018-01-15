@@ -103,11 +103,14 @@ new Vue({
         },
         gen_box_vals(){
             this.traverse_create();
+
             this.boxes.forEach((row, i) => {
                 this.boxes.forEach((cell, j) => {
-                    this.boxes[i][j] = this.gen_maybe()
+                    this.boxes[i][j] = null;  // this.gen_maybe()
                 })
             })
+            
+            this.genk(3)
             // so vue knows array has changed
             this.boxes.push([])
             this.boxes.pop()
