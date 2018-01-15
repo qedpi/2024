@@ -49,9 +49,14 @@ new Vue({
             }
             return empties
         },
+        game_over(){
+            alert('game over');
+            this.gen_box_vals()
+        },
         genk(k){
+            let empties;
             for (let i = 0; i < k; i ++){
-                let empties = this.get_empty_cells()
+                empties = this.get_empty_cells()
                 console.log(...empties)
                 if (empties.length < 1){
                     break
@@ -59,6 +64,9 @@ new Vue({
                 let [r, c] = empties[rand_range(0, empties.length - 1)]
                 console.log(r, c)
                 this.boxes[r][c] = [this.gen_something()]
+            }
+            if (!empties.length){
+                this.game_over()
             }
         },
         gen_maybe(){
